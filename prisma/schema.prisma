@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LogsRequests {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  endpoint   String
+  method     String   @db.VarChar(10)
+  usuarioId  String?  @map("usuario_id")
+  ip         String?
+  statusCode Int?     @map("status_code")
+  duracionMs Int?     @map("duracion_ms")
+  creadoEn   DateTime @default(now()) @map("creado_en") @db.Timestamptz(6)
+
+  @@map("logs_requests")
+}
+
+model LogsErrores {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  endpoint   String
+  method     String   @db.VarChar(10)
+  usuarioId  String?  @map("usuario_id")
+  ip         String?
+  statusCode Int?     @map("status_code")
+  mensaje    String?
+  stackTrace String?  @map("stack_trace")
+  creadoEn   DateTime @default(now()) @map("creado_en") @db.Timestamptz(6)
+
+  @@map("logs_errores")
+}
+
+model MetricasEndpoints {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  endpoint         String
+  method           String   @db.VarChar(10)
+  totalRequests    Int      @default(0) @map("total_requests")
+  tiempoPromedioMs Float    @default(0) @map("tiempo_promedio_ms")
+  actualizadoEn    DateTime @default(now()) @map("actualizado_en") @db.Timestamptz(6)
+
+  @@unique([endpoint, method])
+  @@map("metricas_endpoints")
+}
